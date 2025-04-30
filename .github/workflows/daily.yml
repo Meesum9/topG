@@ -2,24 +2,25 @@ name: Daily Commit
 
 on:
   schedule:
-    - cron: "0 0 * * *"  # Runs daily at 00:00 UTC
-  workflow_dispatch:     # Allow manual runs too
+    - cron: '0 0 * * *'  # Runs every day at midnight UTC
+  workflow_dispatch:     # Also allows manual run
 
 jobs:
   commit:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Run update script
+      - name: Make a change
         run: |
-          python3 update.py
+          date >> commit.txt
 
-      - name: Commit changes
+      - name: Commit and push
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add .
-          git commit -m "Daily commit: $(date)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add commit.txt
+          git commit -m "🤖 Daily commit: $(date)" || echo "Nothing to commit"
           git push
